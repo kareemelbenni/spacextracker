@@ -3,11 +3,13 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-import ListingScreen from './screens/ListingScreen';
+import LaunchesScreen from './screens/LaunchesScreen';
 import RocketsScreen from './screens/RocketsScreen';
-import DetailsScreen from './screens/DetailsScreen';
+import LaunchDetailsScreen from './screens/LaunchDetailsScreen';
+import RocketDetailsScreen from './screens/RocketDetailsScreen';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
-// import Ionicons from 'react-native-vector-icons/Ionicons';
+import Rocket from './svgs/rocket.svg'; // Path to your SVG file
+import Planet from './svgs/planet.svg'; // Path to your SVG file
 
 const client = new ApolloClient({
   uri: 'https://spacex-production.up.railway.app/',
@@ -20,25 +22,18 @@ const Stack = createStackNavigator();
 // Bottom Tabs for Launches and Rockets
 const BottomTabs = () => (
   <Tab.Navigator
-    // screenOptions={({route}) => ({
-    //   tabBarIcon: ({focused, color, size}) => {
-    //     let iconName;
+    screenOptions={({route}) => ({
+      tabBarIcon: ({focused, color, size}) => {
 
-    //     if (route.name === 'Launches') {
-    //       iconName = focused ? 'rocket' : 'rocket-outline';
-    //     } else if (route.name === 'Rockets') {
-    //       iconName = focused ? 'planet' : 'planet-outline';
-    //     }
-
-    //     return <Ionicons name="house" size={size} color={color} />;
-    //   },
-    //   tabBarActiveTintColor: 'tomato',
-    //   tabBarInactiveTintColor: 'gray',
-    //   headerTitleAlign: 'center',
-    // })}
+        return route.name === 'Rockets'?<Rocket width={25} height={25} fill={color} />:<Planet width={25} height={25} fill={color} />;
+      },
+      tabBarActiveTintColor: 'black',
+      tabBarInactiveTintColor: 'gray',
+      headerTitleAlign: 'center',
+    })}
   >
-    <Tab.Screen name="Launches" component={ListingScreen} />
-    <Tab.Screen name="Rockets" component={RocketsScreen} />
+    <Tab.Screen name="Launches" component={LaunchesScreen} options={{headerTitleAlign: 'left'}}/>
+    <Tab.Screen name="Rockets" component={RocketsScreen} options={{headerTitleAlign: 'left'}}/>
   </Tab.Navigator>
 );
 
@@ -48,17 +43,21 @@ const App = () => {
       <SafeAreaProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Home">
-            {/* Home is the BottomTabs Navigator */}
             <Stack.Screen
               name="Home"
               component={BottomTabs}
-              options={{headerShown: false}}
+              options={{headerShown: false,headerTitleAlign: 'left',}}
             />
             {/* Details Screen */}
             <Stack.Screen
-              name="Details"
-              component={DetailsScreen}
-              options={{headerTitleAlign: 'center'}}
+              name="Launch Details"
+              component={LaunchDetailsScreen}
+              options={{headerTitleAlign: 'left'}}
+            />
+            <Stack.Screen
+              name="Rocket Details"
+              component={RocketDetailsScreen}
+              options={{headerTitleAlign: 'left'}}
             />
           </Stack.Navigator>
         </NavigationContainer>

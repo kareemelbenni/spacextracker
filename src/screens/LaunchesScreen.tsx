@@ -10,7 +10,7 @@ import {
 import {useGetLaunchesQuery} from '../network/queries/__generated__/graphql';
 import LaunchItem from '../components/LaunchItem';
 
-const ListingScreen = ({navigation}: {navigation: any}) => {
+const LaunchesScreen = ({navigation}: {navigation: any}) => {
   const [page, setPage] = useState(1);
   const [fetchingMore, setFetchingMore] = useState(false);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc'); // State for sorting order
@@ -19,7 +19,15 @@ const ListingScreen = ({navigation}: {navigation: any}) => {
     variables: {limit: 10, offset: 0},
   });
 
-  if (loading && page === 1) return <ActivityIndicator size="large" />;
+  // If loading and on the first page, show loading indicator centered
+  if (loading && page === 1) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={'black'} />
+      </View>
+    );
+  }
+
   if (error) return <Text>Error: {error?.message || 'Unknown error'}</Text>;
 
   const loadMoreData = async () => {
@@ -68,18 +76,19 @@ const ListingScreen = ({navigation}: {navigation: any}) => {
 
   return (
     <View style={styles.container}>
-
       {/* Sort Buttons */}
       <View style={styles.sortContainer}>
         <Button
           title="Sort by Date: ASC"
           onPress={() => handleSortChange('asc')}
           disabled={sortOrder === 'asc'}
+          color={"black"}
         />
         <Button
           title="Sort by Date: DESC"
           onPress={() => handleSortChange('desc')}
           disabled={sortOrder === 'desc'}
+          color={"black"}
         />
       </View>
 
@@ -94,7 +103,7 @@ const ListingScreen = ({navigation}: {navigation: any}) => {
             name={item.mission_name}
             date={item.launch_date_utc}
             onViewDetails={() =>
-              navigation.navigate('Details', {launchId: item.id})
+              navigation.navigate('Launch Details', {launchId: item.id})
             }
           />
         )}
@@ -113,14 +122,19 @@ const ListingScreen = ({navigation}: {navigation: any}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // padding: 16,
     margin: 16,
+    marginBottom: 0,
   },
   sortContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 10,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center', // Centers the loader vertically
+    alignItems: 'center', // Centers the loader horizontally
+  },
 });
 
-export default ListingScreen;
+export default LaunchesScreen;
