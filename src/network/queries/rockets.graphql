@@ -1,0 +1,16 @@
+query GetRockets($limit: Int, $offset: Int) {
+  rockets(limit: $limit, offset: $offset) {
+    id
+    name
+    first_flight
+  }
+}
+
+query GetRocket($rocketId: ID!) {
+  rocket(id: $rocketId) {
+    id
+    name
+    first_flight
+    description
+  }
+}
