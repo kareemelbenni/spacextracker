@@ -1,31 +1,43 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, ActivityIndicator, Image, StyleSheet} from 'react-native';
-import {useGetRocketQuery} from '../network/queries/__generated__/graphql';
+import React from 'react';
+import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
+import { useGetRocketQuery } from '../network/queries/__generated__/graphql';
+import RocketInfo from '../components/RocketInfo'; // Import the RocketInfo component
 
-const LaunchDetailsScreen = ({route}: {route: any}) => {
-  const {rocketId} = route.params;
-  const {loading, error, data} = useGetRocketQuery({
-    variables: {rocketId: rocketId},
+const RocketDetailsScreen = ({ route }: { route: any }) => {
+  const { rocketId } = route.params;  // Get rocketId from route parameters
+  const { loading, error, data } = useGetRocketQuery({
+    variables: { rocketId }, // Fetch rocket data with the rocketId
   });
 
-  console.log('data', data?.rocket);
-
-  if (loading)
+  // Loading state while data is being fetched
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={'black'} />
       </View>
     );
-  if (error) return <Text>Error: {error.message}</Text>;
+  }
 
+  // Error handling if data fetching fails
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text>Error: {error.message || 'An unknown error occurred'}</Text>
+      </View>
+    );
+  }
+
+  // If data is successfully fetched, display rocket details
   return (
-    <View style={{margin: 16}}>
-      <Text style={{marginBottom: 8}}>
-        {'Rocket Name: ' + data?.rocket?.name}
-      </Text>
-      <Text style={{marginBottom: 8}}>
-        {'Description: ' + data?.rocket?.description}
-      </Text>
+    <View style={styles.container}>
+      {data?.rocket ? (
+        <RocketInfo
+          name={data?.rocket?.name || 'N/A'}
+          description={data?.rocket?.description || 'No description available.'}
+        />
+      ) : (
+        <Text>No rocket data available.</Text>
+      )}
     </View>
   );
 };
@@ -36,6 +48,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Centers the loader vertically
     alignItems: 'center', // Centers the loader horizontally
   },
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
 });
 
-export default LaunchDetailsScreen;
+export default RocketDetailsScreen;

@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
-import {View, Text, FlatList, ActivityIndicator, StyleSheet,Button} from 'react-native';
-import {useGetRocketsQuery} from '../network/queries/__generated__/graphql'; // Adjust the import for your GraphQL queries
+import React, { useState } from 'react';
+import { View, FlatList, ActivityIndicator, Text, StyleSheet } from 'react-native';
+import { useGetRocketsQuery } from '../network/queries/__generated__/graphql';
+import RocketListItem from '../components/RocketListItem'; // Import the RocketListItem component
 
-const RocketsScreen = ({navigation}: {navigation: any}) => {
-  const {loading, error, data} = useGetRocketsQuery(); // Replace with your actual query
+const RocketsScreen = ({ navigation }: { navigation: any }) => {
+  const { loading, error, data } = useGetRocketsQuery(); // Query for rockets data
 
   // Show loading indicator if data is being fetched
   if (loading) {
@@ -14,6 +15,7 @@ const RocketsScreen = ({navigation}: {navigation: any}) => {
     );
   }
 
+  // Handle error if data fetching fails
   if (error) return <Text>Error: {error.message || 'Unknown error'}</Text>;
 
   return (
@@ -21,12 +23,13 @@ const RocketsScreen = ({navigation}: {navigation: any}) => {
       <FlatList
         data={data?.rockets || []}
         keyExtractor={(item: any) => item.id.toString()}
-        renderItem={({item}: {item: any}) => (
-          <View style={styles.item}>
-            <Text style={styles.title}>{item.name}</Text>
-            <Text style={styles.firstLaunch}>{item.first_flight}</Text>
-            <Button title="View Details" onPress={()=>{navigation.navigate('Rocket Details', {rocketId: item.id})}} color={'black'} />
-          </View>
+        renderItem={({ item }: { item: any }) => (
+          <RocketListItem
+            id={item.id}
+            name={item.name}
+            first_flight={item.first_flight}
+            onViewDetails={() => navigation.navigate('Rocket Details', { rocketId: item.id })}
+          />
         )}
       />
     </View>
@@ -37,20 +40,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-  },
-  item: {
-    marginBottom: 16,
-    padding: 8,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  firstLaunch: {
-    marginBottom: 8,
   },
   loadingContainer: {
     flex: 1,
